@@ -2,18 +2,44 @@ version : "3.9"
 
 # main block
 services:
- app:
-  build:
-    # context is current directory that we've currently running Docker compose from
-    context: .
-    args:
-      - DEV=true
+  app:
+    build:
+      # context is current directory that we've currently running Docker compose from
+      context: .
+      args:
+        - DEV=true
 
-  # port of local machine map to port of container
-  ports:
-    - "8000:8000"
-  volumes:
-    - ./app:/app
-  command: >
-    sh -c "python manage.py runserver 0.0.0.0:8000"
+    # port of local machine map to port of container
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+    environment:
+    # Các biến này sẽ được Django sử dụng để kết nối đến database.
+      - DB_HOST=db
+      - DB_NAME=dev_db
+      - DB_USER=dev_user
+      - DB_PASS=changeme
+    depends_on:
+      # Đảm bảo db khởi động trước khi app chạy.
+      - db
+
+  # db là tên service, sẽ dùng làm hostname để app kết nối tới DB.
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    environment:
+    # Tạo sẵn database, user và password khi container khởi động.
+      - POSTGRES_DB=dev_db
+      - POSTGRES_USER=dev_user
+      - POSTGRES_PASSWORD=changeme
+
+volumes:
+  dev-db-data:
+
+
+ 
   

@@ -41,10 +41,12 @@ ARG DEV=false
 RUN python -m venv /py && \
 # Cập nhật pip lên phiên bản mới nhất để đảm bảo tương thích và hiệu suất khi cài đặt gói.
     /py/bin/pip install --upgrade pip && \
-    # Cài đặt các gói cần thiết để biên dịch dependencies Python
-    # apk add --update --no-cache postgresql-client jpeg-dev && \
-    # apk add --update --no-cache --virtual .tmp-build-deps \
-        # build-base postgresql-dev musl-dev zlib zlib-dev linux-headers && \
+    # Thêm dòng cài đặt PostgreSQL client (cần cho kết nối)
+    apk add --update --no-cache postgresql-client jpeg-dev && \
+    # Thêm nhóm gói tạm thời để build psycopg2
+    # --virtual .tmp-build-deps: nhóm các gói build lại thành một tên tạm để dễ xóa sau.
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev zlib zlib-dev linux-headers && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     # Kiểm tra biến DEV. Nếu true, cài đặt các gói từ requirements.dev.txt (VD: pytest, flake8)
     # Chỉ áp dụng trong môi trường phát triển, không cài trong production để Tăng bảo mật và giảm dung lượng Docker image production.
@@ -55,7 +57,7 @@ RUN python -m venv /py && \
     # Xóa các tệp tạm (requirements.txt, requirements.dev.txt) để giảm kích thước image
     # Tuân thủ nguyên tắc giữ image nhẹ nhất có thể
     rm -rf /tmp && \
-    # Xóa nhóm gói .tmp-build-deps để giảm kích thước image
+    # Sau khi cài xong gói Python, Xóa nhóm gói .tmp-build-deps để giảm kích thước image
     # Đảm bảo image chỉ chứa những gì cần thiết để chạy ứng dụng.
     # apk del .tmp-build-deps && \
     # Tạo người dùng django-user
