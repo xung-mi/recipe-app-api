@@ -21,7 +21,13 @@ jobs:
       # Checkout code: Lấy code về runner để chuẩn bị kiểm tra.
       - name: Checkout code
         uses: actions/checkout@v4
-
+      
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+          
       # Run Tests: Chạy các unit test bằng lệnh python manage.py test.
       - name: Run Tests
         run: docker compose run --rm app sh -c "python manage.py test"
