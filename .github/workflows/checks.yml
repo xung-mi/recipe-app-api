@@ -8,7 +8,7 @@ jobs:
   # define a job, named test-lint
   test-lint:
     name = Test and Lint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-20.04
 
     steps:
       # Log into Docker Hub: Xác thực để tránh bị giới hạn rate limit khi pull image.
