@@ -7,7 +7,7 @@ on: [push]
 jobs:
   # define a job, named test-lint
   test-lint:
-    name = Test and Lint
+    name : Test and Lint
     runs-on: ubuntu-20.04
 
     steps:
