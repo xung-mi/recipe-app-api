@@ -1,0 +1,7 @@
+[flake8]
+exclude = 
+    migrations,
+    __pycache__,
+    manage.py,
+    settings.py
+; Mục đích: Bỏ qua các file và thư mục do Django tự sinh ra, không cần kiểm tra định dạng.

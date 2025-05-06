@@ -1,0 +1,31 @@
+---
+name: Checks
+
+# trigger
+on: [push]
+
+jobs:
+  # define a job, named test-lint
+  test-lint:
+    name = Test and Lint
+    runs-on: ubuntu-24.04
+
+    steps:
+      # Log into Docker Hub: Xác thực để tránh bị giới hạn rate limit khi pull image.
+      - name: Log into Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      # Checkout code: Lấy code về runner để chuẩn bị kiểm tra.
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Run Tests: Chạy các unit test bằng lệnh python manage.py test.
+      - name: Run Tests
+        run: docker-compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
+
+      # Run Linter: Chạy kiểm tra style code với flake8.
+      - name: Run Linter
+        run: docker-compose run --rm app sh -c "flake8"
