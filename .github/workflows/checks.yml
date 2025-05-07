@@ -28,9 +28,9 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version
           
-      # Run Tests: Chạy các unit test bằng lệnh python manage.py test.
+      # Run Tests: Đảm bảo test chỉ chạy khi DB sẵn sàng.
       - name: Run Tests
-        run: docker compose run --rm app sh -c "python manage.py test"
+        run: docker compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
 
       # Run Linter: Chạy kiểm tra style code với flake8.
       - name: Run Linter
