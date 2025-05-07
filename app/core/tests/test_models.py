@@ -1,7 +1,7 @@
 """
     Test for models
 """
-
+from django.urls import reverse
 from django.test import TestCase
 # allows us to get the user model that is currently active in this project
 from django.contrib.auth import get_user_model
@@ -9,6 +9,20 @@ from django.contrib.auth import get_user_model
 from core import models
 
 class ModelTests(TestCase):
+    
+    def setUp(self):
+        """Create user and client."""
+        self.admin_user = get_user_model().objects.create_superuser(
+            email='admin@example.com',
+            password='testpass123',
+        )
+        self.client.force_login(self.admin_user)
+        self.user = get_user_model().objects.create_user(
+            email='user@example.com',
+            password='testpass123',
+            name='Test User'
+        )
+
     def test_create_user_with_email_successful(self):
         """Test creating a new user with an email is successful"""
         email = 'test@example.com'
@@ -52,4 +66,25 @@ class ModelTests(TestCase):
         )
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
+        
+    def test_edit_user_page(self):
+        """Test the edit user page works."""
+        self.client.login(email='admin@example.com', password='test123')
+        # Tạo URL mẫu /admin/core/user/<id>/change/ (theo cú pháp Django Admin).
+        # Truyền ID của user
+        # Ý nghĩa: Đảm bảo truy cập đúng trang chỉnh sửa của user cụ thể (ví dụ: /admin/core/user/1/change/).
+        url = reverse('admin:core_user_change', args=[self.user.id])
+        
+        # Gửi yêu cầu GET đến URL bằng self.client (Django test client).
+        response = self.client.get(url)
+        
+        # Kiểm tra mã trạng thái HTTP của phản hồi là 200 (OK).
+        self.assertEqual(response.status_code, 200)
+        
+    def test_create_user_page(self):
+        """Test the create user page works."""
+        url = reverse('admin:core_user_add')
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
 
