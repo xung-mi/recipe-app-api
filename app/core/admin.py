@@ -1,7 +1,7 @@
 # core/admin.py
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import User, Recipe
 
 class UserAdmin(BaseUserAdmin):
     ordering = ['email'] # Giúp sắp xếp user theo email, cải thiện khả năng tìm kiếm và quản lý.
@@ -21,3 +21,4 @@ class UserAdmin(BaseUserAdmin):
     readonly_fields = ['last_login'] # Chỉ định các trường chỉ đọc
 
 admin.site.register(User, UserAdmin)
+admin.site.register(Recipe)

@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-# Create your models here.
+
+# import đối tượng settings, cho phép truy cập các cấu hình của dự án được định nghĩa trong file settings.py
+from django.conf import settings
 
 # AbstractBaseUser cung cấp chức năng xác thực nhưng không có trường mặc định
 # PermissionsMixin thêm chức năng quản lý quyền và các trường liên quan.
@@ -42,3 +44,17 @@ class User(AbstractBaseUser,
     objects = UserManager()
     
     USERNAME_FIELD = 'email' #dùng email thay vì username mặc định cho xác thực.
+    
+class Recipe(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, # dùng import settings.AUTH_USER_MODEL để tránh hardcode, tái sử dụng, dễ thay đổi
+        on_delete=models.CASCADE
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    time_minutes = models.IntegerField()
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    link = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return self.title

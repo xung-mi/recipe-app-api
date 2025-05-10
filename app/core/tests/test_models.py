@@ -3,10 +3,14 @@
 """
 from django.urls import reverse
 from django.test import TestCase
-# allows us to get the user model that is currently active in this project
+
+# Lấy model user để tạo user test
 from django.contrib.auth import get_user_model
 
 from core import models
+
+# Dùng để lưu giá (price) của recipe với độ chính xác cao.
+from decimal import Decimal
 
 class ModelTests(TestCase):
     
@@ -87,4 +91,23 @@ class ModelTests(TestCase):
         res = self.client.get(url)
 
         self.assertEqual(res.status_code, 200)
+        
+        
+    # Recipe
+    def test_create_recipe(self):
+        """Test creating a recipe is successful."""
+        user = get_user_model().objects.create_user(
+            email='test@example.com',
+            password='testpass123'
+        )
+        recipe = models.Recipe.objects.create(
+            user=user,
+            title='Sample recipe name',
+            time_minutes=5,
+            price=Decimal('5.50'),
+            description='Sample recipe description'
+        )
+        self.assertEqual(str(recipe), recipe.title)
+        
+    
 
